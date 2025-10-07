@@ -39,7 +39,7 @@ router.get("/", authRequired, async (req, res, next) => {
     const isPrivileged =
       req.user!.role === "admin" || req.user!.role === "manager";
     const where = isPrivileged ? undefined : { owner_id: req.user!.id };
-    const projects = await Project.findAll({ where });
+    const projects = await Project.findAll(where ? { where } : {});
     return res.json(projects);
   } catch (e) {
     next(e);

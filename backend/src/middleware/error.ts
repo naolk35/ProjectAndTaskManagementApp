@@ -79,13 +79,13 @@ function normalizeError(err: unknown): AppError {
   if (err instanceof AppError) return err;
   if (isSequelizeUniqueConstraintError(err)) {
     return new AppError("CONFLICT", "Resource already exists", {
-      details: { fields: err.errors?.map((e: any) => e.path) ?? [] },
+      details: { fields: (err as any).errors?.map((e: any) => e.path) ?? [] },
     });
   }
   if (isSequelizeValidationError(err)) {
     return new AppError("VALIDATION_ERROR", "Validation failed", {
       details: {
-        errors: err.errors?.map((e: any) => ({
+        errors: (err as any).errors?.map((e: any) => ({
           path: e.path,
           message: e.message,
           value: e.value,
@@ -150,8 +150,3 @@ function isSequelizeUniqueConstraintError(err: unknown): any {
     (err as any).name === "SequelizeUniqueConstraintError"
   );
 }
-
-
-
-
-

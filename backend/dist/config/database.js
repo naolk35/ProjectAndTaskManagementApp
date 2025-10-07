@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sequelize = void 0;
 exports.testConnection = testConnection;
 const sequelize_1 = require("sequelize");
-// Minimal connection only – no schema management
 const dbName = process.env.DB_NAME || "project_task_db";
 const dbUser = process.env.DB_USER || "root";
 const dbPass = process.env.DB_PASS || "";
@@ -18,5 +17,4 @@ exports.sequelize = new sequelize_1.Sequelize(dbName, dbUser, dbPass, {
 async function testConnection() {
     await exports.sequelize.authenticate();
 }
-// removed ensureDatabaseAndSchema – user requested connection only
 //# sourceMappingURL=database.js.map

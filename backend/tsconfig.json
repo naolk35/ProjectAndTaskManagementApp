@@ -47,5 +47,6 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "pretty": true
-  }
+  },
+  "exclude": ["tests/**/*", "node_modules", "dist"]
 }
