@@ -1,0 +1,54 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: project_task_db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    image: project-task-backend
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: project_task_db
+      DB_USER: root
+      DB_PASS: root
+      JWT_SECRET: change_me
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    image: project-task-frontend
+    environment:
+      VITE_API_URL: http://backend:4000/api
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+
+
+
+
+
+

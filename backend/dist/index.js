@@ -7,7 +7,6 @@ require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const database_js_1 = require("./config/database.js");
-require("./models/User.js");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
@@ -16,9 +15,7 @@ app.get("/health", (_req, res) => {
 });
 async function start() {
     try {
-        await (0, database_js_1.ensureDatabaseAndSchema)();
         await (0, database_js_1.testConnection)();
-        await database_js_1.sequelize.sync();
         console.log("Database connection OK");
     }
     catch (err) {
