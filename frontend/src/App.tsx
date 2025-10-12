@@ -20,7 +20,6 @@ function App() {
         const res = await axios.get(`${baseUrl}/health`, { timeout: 5000 });
         setPayload(res.data);
         // Log for debugging
-        // console.log("/health response:", res.status, res.data);
         const okVal = (res.data as { ok?: boolean | string })?.ok;
         if (okVal === true || okVal === "true") {
           setStatus("success");

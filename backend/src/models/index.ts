@@ -19,12 +19,3 @@ Task.belongsTo(User, { foreignKey: "assigned_to", as: "assignee" });
 User.hasMany(Task, { foreignKey: "assigned_to", as: "assignedTasks" });
 
 export { sequelize, User, Project, Task };
-
-
-
-
-
-
-
-
-
