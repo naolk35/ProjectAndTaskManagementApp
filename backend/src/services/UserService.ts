@@ -37,10 +37,10 @@ export class UserService {
   static async update(
     id: number,
     input: {
-      name?: string;
-      email?: string;
-      password?: string;
-      role?: "admin" | "manager" | "employee";
+      name?: string | undefined;
+      email?: string | undefined;
+      password?: string | undefined;
+      role?: "admin" | "manager" | "employee" | undefined;
     }
   ) {
     const user = await User.findByPk(id);

@@ -30,7 +30,7 @@ export class ProjectService {
 
   static async update(
     id: number,
-    input: { name?: string; description?: string }
+    input: { name?: string | undefined; description?: string | undefined }
   ) {
     const project = await Project.findByPk(id);
     if (!project) throw new AppError("NOT_FOUND", "Project not found");

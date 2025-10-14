@@ -6,7 +6,7 @@ export class TaskService {
   static async create(input: {
     title: string;
     description: string;
-    status?: TaskStatus;
+    status?: TaskStatus | undefined;
     project_id: number;
     assigned_to: number;
   }) {
@@ -63,10 +63,10 @@ export class TaskService {
   static async update(
     id: number,
     input: {
-      title?: string;
-      description?: string;
-      status?: TaskStatus;
-      assigned_to?: number;
+      title?: string | undefined;
+      description?: string | undefined;
+      status?: TaskStatus | undefined;
+      assigned_to?: number | undefined;
     }
   ) {
     const task = await Task.findByPk(id);

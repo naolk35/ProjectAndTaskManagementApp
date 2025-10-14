@@ -7,7 +7,7 @@ export interface RegisterInput {
   name: string;
   email: string;
   password: string;
-  role?: "admin" | "manager" | "employee";
+  role?: "admin" | "manager" | "employee" | undefined;
 }
 
 export interface LoginInput {
