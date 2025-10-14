@@ -22,13 +22,14 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.15.1",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.13",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/jest": "^29.5.13",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.7.0",
     "jest": "^29.7.0",

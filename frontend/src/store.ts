@@ -1,3 +1,8 @@
+// 🧠 Redux Store Configuration
+// This file creates the main Redux store for the app.
+// It combines all slices (auth, health, etc.) and API reducers from RTK Query.
+// The store provides global state access to every component via <Provider>.
+
 import { configureStore } from "@reduxjs/toolkit";
 import { baseApi } from "./api/baseApi";
 import authReducer from "./slices/authSlice";

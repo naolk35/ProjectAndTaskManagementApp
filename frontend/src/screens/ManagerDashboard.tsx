@@ -13,7 +13,28 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { normalizeRtkError } from "../api/baseApi";
 import { useMemo, useState } from "react";
-import { Sidebar, Card, Button, ErrorBanner, Spinner } from "../components/ui";
+import {
+  Layout,
+  Card,
+  Button,
+  Alert,
+  Spin,
+  Space,
+  Typography,
+  Select,
+  Row,
+  Col,
+  Statistic,
+  Form,
+  Input,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  FolderOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
 import { useReorderTasksMutation } from "../api/endpoints";
 import { DataTable } from "../components/DataTable";
 import { FormModal } from "../components/FormModal";
@@ -71,64 +92,110 @@ export default function ManagerDashboard() {
     <StatusBadge status={s} />
   );
 
+  const { Sider, Content } = Layout;
+  const { Title, Text } = Typography;
+  const { Option } = Select;
+
   return (
-    <div className="grid grid-cols-[240px,1fr] min-h-[520px]">
-      <Sidebar
-        items={[
-          {
-            key: "projects",
-            label: "My Projects",
-            onClick: () => setActiveTab("projects"),
-          },
-          {
-            key: "tasks",
-            label: "My Tasks",
-            onClick: () => setActiveTab("tasks"),
-          },
-        ]}
-        activeKey={activeTab}
-        header={<div>Project Manager</div>}
-      />
-      <div className="p-6 space-y-6">
-        <div>
-          <h2 className="text-2xl font-semibold">Project Manager Dashboard</h2>
-          <p className="text-gray-600">Welcome, {user?.name}</p>
+    <Layout style={{ minHeight: "100vh" }}>
+      <Sider width={240} style={{ background: "#fff" }}>
+        <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0" }}>
+          <Title level={4} style={{ margin: 0 }}>
+            Project Manager
+          </Title>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card>
-            <div className="text-sm text-gray-500">My Projects</div>
-            <div className="text-2xl font-bold">{projects?.length ?? 0}</div>
-          </Card>
-          <Card>
-            <div className="text-sm text-gray-500">My Tasks</div>
-            <div className="text-2xl font-bold">{tasks?.length ?? 0}</div>
-          </Card>
-          <Card>
-            <div className="text-sm text-gray-500">Completed Tasks</div>
-            <div className="text-2xl font-bold">
-              {tasks?.filter((t) => t.status === "completed").length ?? 0}
-            </div>
-          </Card>
+        <div style={{ padding: "8px" }}>
+          <Space direction="vertical" style={{ width: "100%" }}>
+            <Button
+              type={activeTab === "projects" ? "primary" : "text"}
+              icon={<FolderOutlined />}
+              onClick={() => setActiveTab("projects")}
+              style={{ width: "100%", textAlign: "left" }}
+            >
+              My Projects
+            </Button>
+            <Button
+              type={activeTab === "tasks" ? "primary" : "text"}
+              icon={<CheckCircleOutlined />}
+              onClick={() => setActiveTab("tasks")}
+              style={{ width: "100%", textAlign: "left" }}
+            >
+              My Tasks
+            </Button>
+          </Space>
         </div>
+      </Sider>
+      <Content style={{ padding: "24px" }}>
+        <div style={{ marginBottom: "24px" }}>
+          <Title level={2}>Project Manager Dashboard</Title>
+          <Text type="secondary">Welcome, {user?.name}</Text>
+        </div>
+        <Row gutter={16} style={{ marginBottom: "24px" }}>
+          <Col xs={24} sm={8}>
+            <Card>
+              <Statistic
+                title="My Projects"
+                value={projects?.length ?? 0}
+                prefix={<FolderOutlined />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card>
+              <Statistic
+                title="My Tasks"
+                value={tasks?.length ?? 0}
+                prefix={<CheckCircleOutlined />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card>
+              <Statistic
+                title="Completed Tasks"
+                value={
+                  tasks?.filter((t) => t.status === "completed").length ?? 0
+                }
+                prefix={<CheckCircleOutlined />}
+              />
+            </Card>
+          </Col>
+        </Row>
 
         {activeTab === "projects" && (
           <Card>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="m-0 text-lg font-semibold">My Projects</h3>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
+              <Title level={3} style={{ margin: 0 }}>
+                My Projects
+              </Title>
               <Button
+                type="primary"
+                icon={<PlusOutlined />}
                 onClick={() => {
                   setProjectModalOpen(true);
                 }}
-                className="bg-green-600 hover:bg-green-500"
               >
                 New Project
               </Button>
             </div>
-            {projError && <ErrorBanner message={projError.message} />}
+            {projError && (
+              <Alert
+                message={projError.message}
+                type="error"
+                style={{ marginBottom: "16px" }}
+              />
+            )}
             {!projError &&
               (loadingProjects || cpState.isLoading || dpState.isLoading) && (
-                <div className="mb-2">
-                  <Spinner />
+                <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                  <Spin />
                 </div>
               )}
             <DataTable
@@ -145,8 +212,9 @@ export default function ManagerDashboard() {
                   key: "actions",
                   header: "Actions",
                   render: (p) => (
-                    <div className="flex gap-2">
+                    <Space>
                       <Button
+                        icon={<EditOutlined />}
                         onClick={() => {
                           setProjectModalOpen(true);
                           setNewProject({
@@ -158,13 +226,14 @@ export default function ManagerDashboard() {
                         Edit
                       </Button>
                       <Button
+                        danger
+                        icon={<DeleteOutlined />}
                         disabled={dpState.isLoading}
                         onClick={() => deleteProject(p.id)}
-                        className="bg-red-600 hover:bg-red-500"
                       >
                         Delete
                       </Button>
-                    </div>
+                    </Space>
                   ),
                 },
               ]}
@@ -174,22 +243,38 @@ export default function ManagerDashboard() {
 
         {activeTab === "tasks" && (
           <Card>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="m-0 text-lg font-semibold">My Tasks</h3>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
+              <Title level={3} style={{ margin: 0 }}>
+                My Tasks
+              </Title>
               <Button
+                type="primary"
+                icon={<PlusOutlined />}
                 onClick={() => {
                   setTaskModalOpen(true);
                 }}
-                className="bg-green-600 hover:bg-green-500"
               >
                 New Task
               </Button>
             </div>
-            {taskError && <ErrorBanner message={taskError.message} />}
+            {taskError && (
+              <Alert
+                message={taskError.message}
+                type="error"
+                style={{ marginBottom: "16px" }}
+              />
+            )}
             {!taskError &&
               (loadingTasks || utState.isLoading || dtState.isLoading) && (
-                <div className="mb-2">
-                  <Spinner />
+                <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                  <Spin />
                 </div>
               )}
             <DataTable
@@ -210,7 +295,12 @@ export default function ManagerDashboard() {
                     <div>
                       <input
                         list={`mgr-users-${t.id}`}
-                        className="border rounded-md px-2 py-1 w-full"
+                        style={{
+                          border: "1px solid #d9d9d9",
+                          borderRadius: 6,
+                          padding: "4px 8px",
+                          width: "100%",
+                        }}
                         placeholder="Type name"
                         onChange={(e) => {
                           const entered = e.target.value.trim().toLowerCase();
@@ -238,35 +328,42 @@ export default function ManagerDashboard() {
                   key: "actions",
                   header: "Actions",
                   render: (t) => (
-                    <div className="flex items-center gap-2">
-                      <select
-                        className="border rounded-md px-2 py-1"
+                    <Space>
+                      <Select
                         value={t.status}
-                        onChange={(e) =>
+                        onChange={(value) =>
                           updateTask({
                             id: t.id,
-                            status: e.target.value as typeof t.status,
+                            status: value as typeof t.status,
                           })
                         }
                         disabled={utState.isLoading}
+                        style={{ width: 120 }}
                       >
-                        <option value="pending">Pending</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                      </select>
+                        <Option value="pending">Pending</Option>
+                        <Option value="in_progress">In Progress</Option>
+                        <Option value="completed">Completed</Option>
+                      </Select>
                       <Button
+                        danger
+                        icon={<DeleteOutlined />}
                         disabled={dtState.isLoading}
                         onClick={() => deleteTask(t.id)}
-                        className="bg-red-600 hover:bg-red-500"
                       >
                         Delete
                       </Button>
-                    </div>
+                    </Space>
                   ),
                 },
               ]}
             />
-            <div className="flex justify-end mt-2">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginTop: "16px",
+              }}
+            >
               <Button
                 onClick={async () => {
                   if (!projects?.length || !tasks?.length) return;
@@ -298,24 +395,26 @@ export default function ManagerDashboard() {
             cpState.isLoading || !newProject.name || !newProject.description
           }
         >
-          <label className="text-sm text-gray-700">Name</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Name"
-            value={newProject.name}
-            onChange={(e) =>
-              setNewProject((s) => ({ ...s, name: e.target.value }))
-            }
-          />
-          <label className="text-sm text-gray-700">Description</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Description"
-            value={newProject.description}
-            onChange={(e) =>
-              setNewProject((s) => ({ ...s, description: e.target.value }))
-            }
-          />
+          <Form layout="vertical">
+            <Form.Item label="Name">
+              <Input
+                placeholder="Name"
+                value={newProject.name}
+                onChange={(e) =>
+                  setNewProject((s) => ({ ...s, name: e.target.value }))
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Description">
+              <Input
+                placeholder="Description"
+                value={newProject.description}
+                onChange={(e) =>
+                  setNewProject((s) => ({ ...s, description: e.target.value }))
+                }
+              />
+            </Form.Item>
+          </Form>
         </FormModal>
 
         <FormModal
@@ -347,64 +446,65 @@ export default function ManagerDashboard() {
             !newTask.assigned_to
           }
         >
-          <label className="text-sm text-gray-700">Title</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Title"
-            value={newTask.title}
-            onChange={(e) =>
-              setNewTask((s) => ({ ...s, title: e.target.value }))
-            }
-          />
-          <label className="text-sm text-gray-700">Description</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Description"
-            value={newTask.description}
-            onChange={(e) =>
-              setNewTask((s) => ({ ...s, description: e.target.value }))
-            }
-          />
-          <label className="text-sm text-gray-700">Project</label>
-          <select
-            className="border rounded-md px-3 py-2"
-            value={String(newTask.project_id || "")}
-            onChange={(e) =>
-              setNewTask((s) => ({ ...s, project_id: Number(e.target.value) }))
-            }
-          >
-            <option value="">Select a project</option>
-            {projects?.map((p) => (
-              <option key={p.id} value={String(p.id)}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-          <label className="text-sm text-gray-700">Assignee</label>
-          <div>
-            <input
-              list="mgr-users-create"
-              className="border rounded-md px-3 py-2 w-full"
-              placeholder="Type a name to search"
-              onChange={(e) => {
-                const entered = e.target.value.trim().toLowerCase();
-                const match = (users || []).find(
-                  (u) => u.name.toLowerCase() === entered
-                );
-                if (match) setNewTask((s) => ({ ...s, assigned_to: match.id }));
-              }}
-            />
-            <datalist id="mgr-users-create">
-              {users?.map((u) => (
-                <option key={u.id} value={u.name} />
-              ))}
-            </datalist>
-            <div className="text-xs text-gray-500 mt-1">
-              Selected ID: {newTask.assigned_to || "-"}
-            </div>
-          </div>
+          <Form layout="vertical">
+            <Form.Item label="Title">
+              <Input
+                placeholder="Title"
+                value={newTask.title}
+                onChange={(e) =>
+                  setNewTask((s) => ({ ...s, title: e.target.value }))
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Description">
+              <Input
+                placeholder="Description"
+                value={newTask.description}
+                onChange={(e) =>
+                  setNewTask((s) => ({ ...s, description: e.target.value }))
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Project">
+              <Select
+                placeholder="Select a project"
+                value={newTask.project_id || undefined}
+                onChange={(value) =>
+                  setNewTask((s) => ({ ...s, project_id: Number(value) }))
+                }
+              >
+                {projects?.map((p) => (
+                  <Option key={p.id} value={p.id}>
+                    {p.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Assignee">
+              <Select
+                placeholder="Select an assignee"
+                value={newTask.assigned_to || undefined}
+                onChange={(value) =>
+                  setNewTask((s) => ({ ...s, assigned_to: Number(value) }))
+                }
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.children as string)
+                    ?.toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              >
+                {users?.map((u) => (
+                  <Option key={u.id} value={u.id}>
+                    {u.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
         </FormModal>
-      </div>
-    </div>
+      </Content>
+    </Layout>
   );
 }

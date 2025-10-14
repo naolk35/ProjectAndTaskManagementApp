@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { AutoComplete, Input } from "antd";
 import type { User } from "../api/endpoints";
 
 export function UserAutocomplete(props: {
@@ -25,9 +26,31 @@ export function UserAutocomplete(props: {
   }, [users, value]);
 
   return (
-    <div className="relative">
-      <input
-        className="w-full border rounded-md px-3 py-2 text-sm bg-white text-gray-900 border-gray-300 placeholder:text-gray-400 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-600 dark:placeholder:text-slate-400"
+    <AutoComplete
+      style={{ width: "100%" }}
+      open={open}
+      onBlur={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      options={filtered.map((u) => ({
+        value: String(u.id),
+        label: (
+          <div>
+            <div style={{ fontWeight: 500, fontSize: 12 }}>{u.name}</div>
+            <div style={{ color: "#888", fontSize: 11 }}>{u.email}</div>
+          </div>
+        ),
+      }))}
+      onSelect={(value) => {
+        onChange(Number(value));
+        setQuery("");
+        setOpen(false);
+      }}
+      onSearch={(text) => {
+        setQuery(text);
+        if (selected) onChange(null);
+      }}
+    >
+      <Input
         placeholder={placeholder || "Search user by name or email"}
         value={selected ? `${selected.name} (${selected.email})` : query}
         onChange={(e) => {
@@ -35,35 +58,7 @@ export function UserAutocomplete(props: {
           setOpen(true);
           if (selected) onChange(null);
         }}
-        onFocus={() => setOpen(true)}
       />
-      {open && (
-        <div className="absolute z-20 mt-1 w-full max-h-64 overflow-auto rounded-md border border-gray-200 dark:border-slate-700 bg-white text-gray-900 dark:bg-slate-900 dark:text-slate-100 shadow">
-          {filtered.length === 0 ? (
-            <div className="px-3 py-2 text-sm text-gray-500 dark:text-slate-400">
-              No results
-            </div>
-          ) : (
-            filtered.map((u) => (
-              <button
-                type="button"
-                key={u.id}
-                className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-slate-800"
-                onClick={() => {
-                  onChange(u.id);
-                  setQuery("");
-                  setOpen(false);
-                }}
-              >
-                <div className="font-medium text-sm">{u.name}</div>
-                <div className="text-xs text-gray-500 dark:text-slate-400">
-                  {u.email}
-                </div>
-              </button>
-            ))
-          )}
-        </div>
-      )}
-    </div>
+    </AutoComplete>
   );
 }

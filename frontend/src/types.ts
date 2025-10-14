@@ -21,14 +21,14 @@ export interface Project {
 export type TaskStatus = "pending" | "in_progress" | "completed";
 
 export interface Task {
-  id: number;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  project_id: number;
-  assigned_to: number;
-  createdAt: string;
-  updatedAt: string;
+  id: number; 
+  title: string; 
+  description: string; 
+  status: TaskStatus; 
+  project_id: number; 
+  assigned_to: number; 
+  createdAt: string; 
+  updatedAt: string; 
 }
 
 

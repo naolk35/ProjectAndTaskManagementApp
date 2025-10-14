@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { normalizeRtkError } from "../api/baseApi";
 import { useMemo } from "react";
-import { Card, ErrorBanner, Spinner } from "../components/ui";
+import { Card, Alert, Spin, Typography, Select } from "antd";
 import { DataTable } from "../components/DataTable";
 import { StatusBadge } from "../components/StatusBadge";
 
@@ -24,22 +24,31 @@ export default function EmployeeDashboard() {
     return map;
   }, [projects]);
 
+  const { Title, Text } = Typography;
+  const { Option } = Select;
+
   return (
-    <div className="p-6 space-y-4">
-      <div>
-        <h2 className="text-2xl font-semibold">Employee Dashboard</h2>
-        <p className="text-gray-600">Welcome, {user?.name}</p>
+    <div style={{ padding: "24px" }}>
+      <div style={{ marginBottom: "24px" }}>
+        <Title level={2}>Employee Dashboard</Title>
+        <Text type="secondary">Welcome, {user?.name}</Text>
       </div>
       <Card>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="m-0 text-lg font-semibold">My Tasks</h3>
+        <div style={{ marginBottom: "16px" }}>
+          <Title level={3} style={{ margin: 0 }}>
+            My Tasks
+          </Title>
         </div>
         {normalizedLoadError && (
-          <ErrorBanner message={normalizedLoadError.message} />
+          <Alert
+            message={normalizedLoadError.message}
+            type="error"
+            style={{ marginBottom: "16px" }}
+          />
         )}
         {isLoading && (
-          <div className="mb-2">
-            <Spinner />
+          <div style={{ textAlign: "center", marginBottom: "16px" }}>
+            <Spin />
           </div>
         )}
         <DataTable
@@ -51,8 +60,10 @@ export default function EmployeeDashboard() {
               header: "Title",
               render: (t) => (
                 <div>
-                  <div className="font-semibold">{t.title}</div>
-                  <div className="opacity-75 text-sm">{t.description}</div>
+                  <div style={{ fontWeight: 600 }}>{t.title}</div>
+                  <div style={{ opacity: 0.75, fontSize: 12 }}>
+                    {t.description}
+                  </div>
                 </div>
               ),
             },
@@ -70,25 +81,29 @@ export default function EmployeeDashboard() {
               key: "update",
               header: "Update",
               render: (t) => (
-                <select
-                  className="border rounded-md px-2 py-1"
+                <Select
                   value={t.status}
-                  onChange={async (e) => {
-                    const status = e.target.value as typeof t.status;
+                  onChange={async (value) => {
+                    const status = value as typeof t.status;
                     await updateTask({ id: t.id, status });
                   }}
                   disabled={updateState.isLoading}
+                  style={{ width: 120 }}
                 >
-                  <option value="pending">Pending</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                </select>
+                  <Option value="pending">Pending</Option>
+                  <Option value="in_progress">In Progress</Option>
+                  <Option value="completed">Completed</Option>
+                </Select>
               ),
             },
           ]}
         />
         {normalizedUpdateError && (
-          <ErrorBanner message={normalizedUpdateError.message} />
+          <Alert
+            message={normalizedUpdateError.message}
+            type="error"
+            style={{ marginTop: "16px" }}
+          />
         )}
       </Card>
     </div>

@@ -16,7 +16,29 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { normalizeRtkError } from "../api/baseApi";
 import { useMemo, useState } from "react";
-import { Sidebar, Button, Card, ErrorBanner, Spinner } from "../components/ui";
+import {
+  Layout,
+  Button,
+  Card,
+  Alert,
+  Spin,
+  Space,
+  Typography,
+  Select,
+  Row,
+  Col,
+  Statistic,
+  Form,
+  Input,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  UserOutlined,
+  FolderOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
 import { DataTable } from "../components/DataTable";
 import { FormModal } from "../components/FormModal";
 import { StatusBadge } from "../components/StatusBadge";
@@ -106,72 +128,99 @@ export default function AdminDashboard() {
     return map;
   }, [users]);
 
+  const { Sider, Content } = Layout;
+  const { Title, Text } = Typography;
+  const { Option } = Select;
+
   return (
-    <div className="grid grid-cols-[240px,1fr] min-h-[520px]">
-      <Sidebar
-        items={[
-          {
-            key: "users",
-            label: "Users",
-            onClick: () => setActiveTab("users"),
-          },
-          {
-            key: "projects",
-            label: "Projects",
-            onClick: () => setActiveTab("projects"),
-          },
-          {
-            key: "tasks",
-            label: "Tasks",
-            onClick: () => setActiveTab("tasks"),
-          },
-        ]}
-        activeKey={activeTab}
-        header={<div>Admin</div>}
-      />
-      <div className="p-6 space-y-6">
-        <div>
-          <h2 className="text-2xl font-semibold">Admin Dashboard</h2>
-          <p className="text-gray-600">Welcome, {user?.name}</p>
+    <Layout style={{ minHeight: "100vh" }}>
+      <Sider width={240} style={{ background: "#fff" }}>
+        <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0" }}>
+          <Title level={4} style={{ margin: 0 }}>
+            Admin
+          </Title>
+        </div>
+        <div style={{ padding: "8px" }}>
+          <Space direction="vertical" style={{ width: "100%" }}>
+            <Button
+              type={activeTab === "users" ? "primary" : "text"}
+              icon={<UserOutlined />}
+              onClick={() => setActiveTab("users")}
+              style={{ width: "100%", textAlign: "left" }}
+            >
+              Users
+            </Button>
+            <Button
+              type={activeTab === "projects" ? "primary" : "text"}
+              icon={<FolderOutlined />}
+              onClick={() => setActiveTab("projects")}
+              style={{ width: "100%", textAlign: "left" }}
+            >
+              Projects
+            </Button>
+            <Button
+              type={activeTab === "tasks" ? "primary" : "text"}
+              icon={<CheckCircleOutlined />}
+              onClick={() => setActiveTab("tasks")}
+              style={{ width: "100%", textAlign: "left" }}
+            >
+              Tasks
+            </Button>
+          </Space>
+        </div>
+      </Sider>
+      <Content style={{ padding: "24px" }}>
+        <div style={{ marginBottom: "24px" }}>
+          <Title level={2}>Admin Dashboard</Title>
+          <Text type="secondary">Welcome, {user?.name}</Text>
         </div>
 
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-          <Card>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-500">Total Users</div>
-                <div className="text-2xl font-bold">{users?.length ?? 0}</div>
-              </div>
-              <div className="text-gray-400">👤</div>
-            </div>
-          </Card>
-          <Card>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-500">Total Projects</div>
-                <div className="text-2xl font-bold">
-                  {projects?.length ?? 0}
-                </div>
-              </div>
-              <div className="text-gray-400">📁</div>
-            </div>
-          </Card>
-          <Card>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-500">Total Tasks</div>
-                <div className="text-2xl font-bold">{tasks?.length ?? 0}</div>
-              </div>
-              <div className="text-gray-400">✅</div>
-            </div>
-          </Card>
-        </div>
+        <Row gutter={16} style={{ marginBottom: "24px" }}>
+          <Col xs={24} sm={8}>
+            <Card>
+              <Statistic
+                title="Total Users"
+                value={users?.length ?? 0}
+                prefix={<UserOutlined />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card>
+              <Statistic
+                title="Total Projects"
+                value={projects?.length ?? 0}
+                prefix={<FolderOutlined />}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card>
+              <Statistic
+                title="Total Tasks"
+                value={tasks?.length ?? 0}
+                prefix={<CheckCircleOutlined />}
+              />
+            </Card>
+          </Col>
+        </Row>
 
         {activeTab === "users" && (
           <Card>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="m-0 text-lg font-semibold">Users</h3>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
+              <Title level={3} style={{ margin: 0 }}>
+                Users
+              </Title>
               <Button
+                type="primary"
+                icon={<PlusOutlined />}
                 onClick={() => {
                   setEditingUser(null);
                   setNewUser({
@@ -182,19 +231,24 @@ export default function AdminDashboard() {
                   });
                   setUserModalOpen(true);
                 }}
-                className="bg-green-600 hover:bg-green-500"
               >
                 New User
               </Button>
             </div>
-            {usersError && <ErrorBanner message={usersError.message} />}
+            {usersError && (
+              <Alert
+                message={usersError.message}
+                type="error"
+                style={{ marginBottom: "16px" }}
+              />
+            )}
             {!usersError &&
               (loadingUsers ||
                 cuState.isLoading ||
                 uuState.isLoading ||
                 duState.isLoading) && (
-                <div className="mb-2">
-                  <Spinner />
+                <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                  <Spin />
                 </div>
               )}
             <DataTable
@@ -208,8 +262,9 @@ export default function AdminDashboard() {
                   key: "actions",
                   header: "Actions",
                   render: (u: User) => (
-                    <div className="flex gap-2">
+                    <Space>
                       <Button
+                        icon={<EditOutlined />}
                         onClick={() => {
                           setEditingUser(u);
                           setNewUser({
@@ -224,13 +279,14 @@ export default function AdminDashboard() {
                         Edit
                       </Button>
                       <Button
+                        danger
+                        icon={<DeleteOutlined />}
                         onClick={() => deleteUser(u.id)}
-                        disabled={duState.isLoading}
-                        className="bg-red-600 hover:bg-red-500"
+                        loading={duState.isLoading}
                       >
                         Delete
                       </Button>
-                    </div>
+                    </Space>
                   ),
                 },
               ]}
@@ -240,27 +296,43 @@ export default function AdminDashboard() {
 
         {activeTab === "projects" && (
           <Card>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="m-0 text-lg font-semibold">Projects</h3>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
+              <Title level={3} style={{ margin: 0 }}>
+                Projects
+              </Title>
               <Button
+                type="primary"
+                icon={<PlusOutlined />}
                 onClick={() => {
                   setEditingProject(null);
                   setNewProject({ name: "", description: "" });
                   setProjectModalOpen(true);
                 }}
-                className="bg-green-600 hover:bg-green-500"
               >
                 New Project
               </Button>
             </div>
-            {projError && <ErrorBanner message={projError.message} />}
+            {projError && (
+              <Alert
+                message={projError.message}
+                type="error"
+                style={{ marginBottom: "16px" }}
+              />
+            )}
             {!projError &&
               (loadingProjects ||
                 cpState.isLoading ||
                 upState.isLoading ||
                 dpState.isLoading) && (
-                <div className="mb-2">
-                  <Spinner />
+                <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                  <Spin />
                 </div>
               )}
             <DataTable
@@ -277,8 +349,9 @@ export default function AdminDashboard() {
                   key: "actions",
                   header: "Actions",
                   render: (p: Project) => (
-                    <div className="flex gap-2">
+                    <Space>
                       <Button
+                        icon={<EditOutlined />}
                         onClick={() => {
                           setEditingProject(p);
                           setNewProject({
@@ -291,13 +364,14 @@ export default function AdminDashboard() {
                         Edit
                       </Button>
                       <Button
+                        danger
+                        icon={<DeleteOutlined />}
                         onClick={() => deleteProject(p.id)}
-                        disabled={dpState.isLoading}
-                        className="bg-red-600 hover:bg-red-500"
+                        loading={dpState.isLoading}
                       >
                         Delete
                       </Button>
-                    </div>
+                    </Space>
                   ),
                 },
               ]}
@@ -307,9 +381,20 @@ export default function AdminDashboard() {
 
         {activeTab === "tasks" && (
           <Card>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="m-0 text-lg font-semibold">Tasks</h3>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
+              <Title level={3} style={{ margin: 0 }}>
+                Tasks
+              </Title>
               <Button
+                type="primary"
+                icon={<PlusOutlined />}
                 onClick={() => {
                   setEditingTask(null);
                   setNewTask({
@@ -320,54 +405,58 @@ export default function AdminDashboard() {
                   });
                   setTaskModalOpen(true);
                 }}
-                className="bg-green-600 hover:bg-green-500"
               >
                 New Task
               </Button>
             </div>
-            {taskError && <ErrorBanner message={taskError.message} />}
+            {taskError && (
+              <Alert
+                message={taskError.message}
+                type="error"
+                style={{ marginBottom: "16px" }}
+              />
+            )}
             {!taskError &&
               (loadingTasks ||
                 ctState.isLoading ||
                 utState.isLoading ||
                 dtState.isLoading) && (
-                <div className="mb-2">
-                  <Spinner />
+                <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                  <Spin />
                 </div>
               )}
-            <div className="flex items-center gap-3 my-2">
-              <label className="text-sm text-gray-600">Status</label>
-              <select
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "16px",
+                marginBottom: "16px",
+              }}
+            >
+              <Text>Status:</Text>
+              <Select
                 value={statusFilter}
-                onChange={(e) =>
-                  setStatusFilter(
-                    e.target.value as
-                      | "all"
-                      | "pending"
-                      | "in_progress"
-                      | "completed"
-                  )
-                }
-                className="border rounded-md px-2 py-1"
+                onChange={(value) => setStatusFilter(value)}
+                style={{ width: 120 }}
               >
-                <option value="all">All</option>
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-              </select>
-              <label className="text-sm text-gray-600">Assignee</label>
-              <select
+                <Option value="all">All</Option>
+                <Option value="pending">Pending</Option>
+                <Option value="in_progress">In Progress</Option>
+                <Option value="completed">Completed</Option>
+              </Select>
+              <Text>Assignee:</Text>
+              <Select
                 value={assigneeFilter}
-                onChange={(e) => setAssigneeFilter(e.target.value)}
-                className="border rounded-md px-2 py-1"
+                onChange={(value) => setAssigneeFilter(value)}
+                style={{ width: 150 }}
+                allowClear
               >
-                <option value="">All</option>
                 {users?.map((u) => (
-                  <option key={u.id} value={String(u.id)}>
+                  <Option key={u.id} value={String(u.id)}>
                     {u.name}
-                  </option>
+                  </Option>
                 ))}
-              </select>
+              </Select>
             </div>
             <DataTable
               loading={loadingTasks}
@@ -403,22 +492,23 @@ export default function AdminDashboard() {
                   key: "actions",
                   header: "Actions",
                   render: (t: Task) => (
-                    <div className="flex items-center gap-2">
-                      <select
+                    <Space>
+                      <Select
                         value={t.status}
-                        onChange={(e) =>
+                        onChange={(value) =>
                           updateTask({
                             id: t.id,
-                            status: e.target.value as Task["status"],
+                            status: value as Task["status"],
                           })
                         }
-                        className="border rounded-md px-2 py-1"
+                        style={{ width: 120 }}
                       >
-                        <option value="pending">Pending</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                      </select>
+                        <Option value="pending">Pending</Option>
+                        <Option value="in_progress">In Progress</Option>
+                        <Option value="completed">Completed</Option>
+                      </Select>
                       <Button
+                        icon={<EditOutlined />}
                         onClick={() => {
                           setEditingTask(t);
                           setTaskModalOpen(true);
@@ -427,18 +517,25 @@ export default function AdminDashboard() {
                         Edit
                       </Button>
                       <Button
+                        danger
+                        icon={<DeleteOutlined />}
                         onClick={() => deleteTask(t.id)}
-                        disabled={dtState.isLoading}
-                        className="bg-red-600 hover:bg-red-500"
+                        loading={dtState.isLoading}
                       >
                         Delete
                       </Button>
-                    </div>
+                    </Space>
                   ),
                 },
               ]}
             />
-            <div className="flex justify-end mt-2">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginTop: "16px",
+              }}
+            >
               <Button
                 onClick={async () => {
                   if (!projects?.length || !tasks?.length) return;
@@ -487,49 +584,50 @@ export default function AdminDashboard() {
             setUserModalOpen(false);
           }}
         >
-          <label className="text-sm text-gray-700">Name</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Name"
-            value={newUser.name}
-            onChange={(e) =>
-              setNewUser((s) => ({ ...s, name: e.target.value }))
-            }
-          />
-          <label className="text-sm text-gray-700">Email</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Email"
-            value={newUser.email}
-            onChange={(e) =>
-              setNewUser((s) => ({ ...s, email: e.target.value }))
-            }
-          />
-          <label className="text-sm text-gray-700">Password</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Password"
-            type="password"
-            value={newUser.password}
-            onChange={(e) =>
-              setNewUser((s) => ({ ...s, password: e.target.value }))
-            }
-          />
-          <label className="text-sm text-gray-700">Role</label>
-          <select
-            className="border rounded-md px-3 py-2"
-            value={newUser.role}
-            onChange={(e) =>
-              setNewUser((s) => ({
-                ...s,
-                role: e.target.value as User["role"],
-              }))
-            }
-          >
-            <option value="admin">Admin</option>
-            <option value="manager">Manager</option>
-            <option value="employee">Employee</option>
-          </select>
+          <Form layout="vertical">
+            <Form.Item label="Name">
+              <Input
+                placeholder="Name"
+                value={newUser.name}
+                onChange={(e) =>
+                  setNewUser((s) => ({ ...s, name: e.target.value }))
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Email">
+              <Input
+                placeholder="Email"
+                value={newUser.email}
+                onChange={(e) =>
+                  setNewUser((s) => ({ ...s, email: e.target.value }))
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Password">
+              <Input.Password
+                placeholder="Password"
+                value={newUser.password}
+                onChange={(e) =>
+                  setNewUser((s) => ({ ...s, password: e.target.value }))
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Role">
+              <Select
+                value={newUser.role}
+                onChange={(value) =>
+                  setNewUser((s) => ({
+                    ...s,
+                    role: value as User["role"],
+                  }))
+                }
+              >
+                <Option value="admin">Admin</Option>
+                <Option value="manager">Manager</Option>
+                <Option value="employee">Employee</Option>
+              </Select>
+            </Form.Item>
+          </Form>
         </FormModal>
 
         <FormModal
@@ -546,24 +644,26 @@ export default function AdminDashboard() {
             setNewProject({ name: "", description: "" });
           }}
         >
-          <label className="text-sm text-gray-700">Name</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Name"
-            value={newProject.name}
-            onChange={(e) =>
-              setNewProject((s) => ({ ...s, name: e.target.value }))
-            }
-          />
-          <label className="text-sm text-gray-700">Description</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Description"
-            value={newProject.description}
-            onChange={(e) =>
-              setNewProject((s) => ({ ...s, description: e.target.value }))
-            }
-          />
+          <Form layout="vertical">
+            <Form.Item label="Name">
+              <Input
+                placeholder="Name"
+                value={newProject.name}
+                onChange={(e) =>
+                  setNewProject((s) => ({ ...s, name: e.target.value }))
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Description">
+              <Input
+                placeholder="Description"
+                value={newProject.description}
+                onChange={(e) =>
+                  setNewProject((s) => ({ ...s, description: e.target.value }))
+                }
+              />
+            </Form.Item>
+          </Form>
         </FormModal>
 
         <FormModal
@@ -585,72 +685,68 @@ export default function AdminDashboard() {
             });
           }}
         >
-          <label className="text-sm text-gray-700">Title</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Title"
-            value={newTask.title}
-            onChange={(e) =>
-              setNewTask((s) => ({ ...s, title: e.target.value }))
-            }
-          />
-          <label className="text-sm text-gray-700">Description</label>
-          <input
-            className="border rounded-md px-3 py-2"
-            placeholder="Description"
-            value={newTask.description}
-            onChange={(e) =>
-              setNewTask((s) => ({ ...s, description: e.target.value }))
-            }
-          />
-          <label className="text-sm text-gray-700 dark:text-slate-200">
-            Project
-          </label>
-          <select
-            className="border rounded-md px-3 py-2 bg-white text-gray-900 border-gray-300 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-600"
-            value={String(newTask.project_id || "")}
-            onChange={(e) =>
-              setNewTask((s) => ({ ...s, project_id: Number(e.target.value) }))
-            }
-          >
-            <option value="">Select a project</option>
-            {projects?.map((p) => (
-              <option key={p.id} value={String(p.id)}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-          <label className="text-sm text-gray-700 dark:text-slate-200">
-            Assignee
-          </label>
-          <div>
-            <input
-              list="admin-user-options"
-              className="border rounded-md px-3 py-2 w-full bg-white text-gray-900 border-gray-300 placeholder:text-gray-400 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-600 dark:placeholder:text-slate-400"
-              placeholder="Type a name to search"
-              onChange={(e) => {
-                const entered = e.target.value.trim().toLowerCase();
-                const match = (users || []).find(
-                  (u) => u.name.toLowerCase() === entered
-                );
-                if (match) setNewTask((s) => ({ ...s, assigned_to: match.id }));
-              }}
-            />
-            <datalist id="admin-user-options">
-              {users?.map((u) => (
-                <option
-                  key={u.id}
-                  value={u.name}
-                  className="bg-white text-gray-900 dark:bg-slate-900 dark:text-slate-100"
-                />
-              ))}
-            </datalist>
-            <div className="text-xs text-gray-500 dark:text-slate-400 mt-1">
-              Selected ID: {newTask.assigned_to || "-"}
-            </div>
-          </div>
+          <Form layout="vertical">
+            <Form.Item label="Title">
+              <Input
+                placeholder="Title"
+                value={newTask.title}
+                onChange={(e) =>
+                  setNewTask((s) => ({ ...s, title: e.target.value }))
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Description">
+              <Input
+                placeholder="Description"
+                value={newTask.description}
+                onChange={(e) =>
+                  setNewTask((s) => ({ ...s, description: e.target.value }))
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Project">
+              <Select
+                placeholder="Select a project"
+                value={newTask.project_id || undefined}
+                onChange={(value) =>
+                  setNewTask((s) => ({ ...s, project_id: Number(value) }))
+                }
+              >
+                {projects?.map((p) => (
+                  <Option key={p.id} value={p.id}>
+                    {p.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Assignee">
+              <Select
+                placeholder="Select an assignee"
+                value={newTask.assigned_to || undefined}
+                onChange={(value) =>
+                  setNewTask((s) => ({ ...s, assigned_to: Number(value) }))
+                }
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  String(
+                    (option as unknown as { children?: unknown })?.children ||
+                      ""
+                  )
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              >
+                {users?.map((u) => (
+                  <Option key={u.id} value={u.id}>
+                    {u.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
         </FormModal>
-      </div>
-    </div>
+      </Content>
+    </Layout>
   );
 }

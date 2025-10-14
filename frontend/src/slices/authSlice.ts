@@ -1,3 +1,7 @@
+// 🔐 Authentication Slice
+// Manages global user login state (token, user info, loggedIn status).
+// Includes reducers for login, logout, and restoring session from storage.
+
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 

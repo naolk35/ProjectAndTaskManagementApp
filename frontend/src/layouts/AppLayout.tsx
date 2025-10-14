@@ -1,31 +1,49 @@
 import { Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Container, Header, Button } from "../components/ui";
+import { Layout, Button, Space } from "antd";
+import { BulbOutlined, BulbFilled } from "@ant-design/icons";
+import { useTheme } from "../contexts/ThemeContext";
+
+const { Header: AntHeader, Content } = Layout;
 
 export default function AppLayout() {
-  const [theme, setTheme] = useState<"light" | "dark">(
-    (localStorage.getItem("theme") as "light" | "dark" | null) ?? "light"
-  );
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+  const { mode, toggleTheme } = useTheme();
 
   return (
-    <div className="min-h-screen grid grid-rows-[auto,1fr] bg-gray-50 dark:bg-slate-950">
-      <Header>
-        <Button
-          onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
+    <Layout style={{ minHeight: "100vh" }}>
+      <AntHeader
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: mode === "dark" ? "#001529" : "#fff",
+          borderBottom: "1px solid #f0f0f0",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "18px",
+            fontWeight: "bold",
+            color: mode === "dark" ? "#fff" : "#000",
+          }}
         >
-          Toggle {theme === "light" ? "Dark" : "Light"}
-        </Button>
-      </Header>
-      <div className="grid place-items-start p-6">
-        <Container>
+          Project & Task Manager
+        </div>
+        <Space>
+          <Button
+            type="text"
+            icon={mode === "light" ? <BulbOutlined /> : <BulbFilled />}
+            onClick={toggleTheme}
+            style={{ color: mode === "dark" ? "#fff" : "#000" }}
+          >
+            {mode === "light" ? "Dark" : "Light"} Mode
+          </Button>
+        </Space>
+      </AntHeader>
+      <Content style={{ padding: "24px" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
           <Outlet />
-        </Container>
-      </div>
-    </div>
+        </div>
+      </Content>
+    </Layout>
   );
 }

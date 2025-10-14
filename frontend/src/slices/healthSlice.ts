@@ -1,3 +1,7 @@
+// 💚 Health Slice
+// Redux slice to store the health status of the backend.
+// Works with healthApi to display "Server Connected" or "Offline" in the UI.
+
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 

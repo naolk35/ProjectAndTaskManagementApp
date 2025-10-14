@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import "./App.css";
+// removed tailwind/vite starter css
 
 function App() {
   const [status, setStatus] = useState<

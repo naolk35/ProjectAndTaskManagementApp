@@ -1,3 +1,8 @@
+// 🌐 RTK Query Base API
+// Sets up the base API connection using Redux Toolkit Query.
+// Defines the base URL (from backend) and attaches headers like authorization tokens.
+// Other API services (usersApi, tasksApi, etc.) extend this base.
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../store";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";

@@ -1,42 +1,34 @@
 import type { ReactNode } from "react";
-import { Modal, Button } from "./ui";
+import { Modal, Button, Form, Input, Select, Space } from "antd";
+
+const { Option } = Select;
 
 export function FormField(props: { label: string; children: ReactNode }) {
-  return (
-    <label className="grid gap-1">
-      <span className="text-sm font-medium text-gray-700 dark:text-slate-200">
-        {props.label}
-      </span>
-      {props.children}
-    </label>
-  );
+  return <Form.Item label={props.label}>{props.children}</Form.Item>;
 }
 
 export function TextInput(
   props: React.InputHTMLAttributes<HTMLInputElement> & { className?: string }
 ) {
   const { className, ...rest } = props;
-  return (
-    <input
-      {...rest}
-      className={`rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
-        className || ""
-      }`}
-    />
-  );
+  return <Input {...rest} />;
 }
 
-export function Select(
-  props: React.SelectHTMLAttributes<HTMLSelectElement> & { className?: string }
+export function SelectInput(
+  props: React.SelectHTMLAttributes<HTMLSelectElement> & {
+    className?: string;
+    options?: Array<{ value: string; label: string }>;
+  }
 ) {
-  const { className, ...rest } = props;
+  const { className, options = [], ...rest } = props;
   return (
-    <select
-      {...rest}
-      className={`rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
-        className || ""
-      }`}
-    />
+    <Select {...rest} style={{ width: "100%" }}>
+      {options.map((option) => (
+        <Option key={option.value} value={option.value}>
+          {option.label}
+        </Option>
+      ))}
+    </Select>
   );
 }
 
@@ -57,30 +49,28 @@ export function FormModal(props: {
     submitLabel = "Save",
     disabled,
   } = props;
+
   return (
     <Modal
-      open={open}
       title={title}
-      onClose={onClose}
-      actions={
-        <div className="flex justify-center sm:justify-end gap-2 w-full">
-          <Button
-            onClick={onClose}
-            className="bg-gray-200 text-gray-800 hover:bg-gray-300"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={onSubmit}
-            disabled={disabled}
-            className="bg-indigo-600 hover:bg-indigo-500"
-          >
-            {submitLabel}
-          </Button>
-        </div>
-      }
+      open={open}
+      onCancel={onClose}
+      footer={[
+        <Button key="cancel" onClick={onClose}>
+          Cancel
+        </Button>,
+        <Button
+          key="submit"
+          type="primary"
+          onClick={onSubmit}
+          disabled={disabled}
+        >
+          {submitLabel}
+        </Button>,
+      ]}
+      width={600}
     >
-      <div className="grid gap-3">{props.children}</div>
+      <div style={{ marginTop: "16px" }}>{props.children}</div>
     </Modal>
   );
 }
